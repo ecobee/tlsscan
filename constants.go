@@ -1,7 +1,7 @@
 package main
 
 // ALL THE CIPHERSUITES!!!!!!  (They're not all built into go, hence me defining them),
-// but we don't need to support them, just put them in a header, so here they are ;)
+// but we don't need to support them, just put them in a header, so here they are ;) )
 var cipherSuiteList = map[uint16]string{
 	0x0000: "TLS_NULL_WITH_NULL_NULL",
 	0x0001: "TLS_RSA_WITH_NULL_MD5",
