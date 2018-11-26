@@ -22,8 +22,10 @@ $ ./tlsscan --host api.ecobee.com:443 | jq '.'
   "ciphersuites": [
     "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
     "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+    "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384",
     "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
-    "TLS_RSA_WITH_AES_256_GCM_SHA384"
+    "TLS_RSA_WITH_AES_256_GCM_SHA384",
+    "TLS_RSA_WITH_AES_256_CBC_SHA256"
   ],
   "tlsversion": [
     "TLSv1_2"
