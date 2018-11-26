@@ -101,7 +101,9 @@ func cipherSuiteTest(cipherSuites []uint16, tlsMin uint16, tlsMax uint16, host s
 	// Quick error check
 	if err != nil {
 		// Could not connect, burn it all down!!!
-		defer conn.Close()
+		if conn != nil {
+			defer conn.Close()
+		}
 		log.Printf("Connection failed: %v", err)
 		return 0x000, false
 	}
