@@ -26,15 +26,6 @@ type jsonOutput struct {
 	TLSVersions  []string `json:"tlsversion"`
 }
 
-/*func cipherSuiteTestother(cipherSuites []uint16, tlsMin uint16, tlsMax uint16, host string) (uint16, bool) {
-	// Calculate Lengths
-	SNIHostName := strings.Split(":", host)[0]
-	SNIHostLen := uint16(len(SNIHostName) + 3)
-
-	return 0x0000, false
-
-} */
-
 func cipherSuiteTest(cipherSuites []uint16, tlsMin uint16, tlsMax uint16, host string) (uint16, bool) {
 
 	// Work out how large our (almost) static packet is going to be.  Only the ciphersuites and the hostname
@@ -195,10 +186,6 @@ func main() {
 	for i := range cipherSuiteList {
 		cipherSuites = append(cipherSuites, i)
 	}
-
-	// Testing, remove XXX !!
-	//selectedSuite, handshakeSuccess = cipherSuiteTest(cipherSuites, tlsMin, tlsMax, *host)
-	//fmt.Printf("Sel: %v\nPref: %v\nSuccess: %v\n", preferredSuites, selectedSuite, handshakeSuccess)
 
 	// Supported CipherSuite Test (using full spectrum TLS versions)
 	for handshakeSuccess == true {
