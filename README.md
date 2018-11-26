@@ -35,4 +35,4 @@ $ ./tlsscan --host api.ecobee.com:443 | jq '.'
 
 ## Bugs 🐜
 
-Go currently filters out ciphersuites which it does not support, and so it does not check the full list. 
+~~Go currently filters out ciphersuites which it does not support, and so it does not check the full list.~~ 
