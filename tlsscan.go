@@ -9,7 +9,10 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"os"
 	"strings"
+
+	"github.com/aws/aws-lambda-go/lambda"
 )
 
 // Look up TLS version names
@@ -24,6 +27,10 @@ var tlsNumtoName = map[uint16]string{
 type jsonOutput struct {
 	CipherSuites []string `json:"ciphersuites"`
 	TLSVersions  []string `json:"tlsversion"`
+}
+
+type lamdaRequest struct {
+	ConnectString string `json:"connnectString"`
 }
 
 func cipherSuiteTest(cipherSuites []uint16, tlsMin uint16, tlsMax uint16, host string) (uint16, bool) {
@@ -156,16 +163,12 @@ func makeTLSConnection(cipherSuites []uint16, tlsMin uint16, tlsMax uint16, host
 
 	// Get details of connection state
 	state := conn.ConnectionState()
-	//fmt.Printf("State: %v\n", state)
 
 	// Return the ciphersuite from the state
 	return state.CipherSuite, true
 }
 
-func main() {
-	// Check commandline config options
-	var host = flag.String("host", "127.0.0.1:443", "host to test, format: hostname:port")
-
+func testHost(host *string) (string, []byte) {
 	// Mmmm variables
 	var preferredSuites []uint16
 	var preferredSuitesHuman []string
@@ -174,11 +177,7 @@ func main() {
 	var tlsSupport []string
 	var tlsMax uint16 = 0x304 // TLS 1.3... we need to support, I just need a sane upper bound
 	var tlsMin uint16 = 0x300 // SSLv3 ... not even attempting SSLv2, it's super rare and horrible
-
-	// Parse commandline options
-	flag.Parse()
-
-	handshakeSuccess := true
+	var handshakeSuccess = true
 
 	// List of ciphersuites to test.  As suites are accepted by the server they will be removed from the list and
 	// the connection retried in order to enumerate the next ciphersuite which the server permits.  This adds
@@ -224,5 +223,29 @@ func main() {
 	outputStruct.TLSVersions = tlsSupport
 	jsonOutput, _ := json.Marshal(outputStruct)
 	textOutput := string(jsonOutput)
-	fmt.Printf("%s", textOutput)
+	return textOutput, jsonOutput
+}
+
+// lambdaSetup is used to perform the lambda only steps so that the same tool can be ran
+// either on the commandline or in a lambda function in AWS
+func lambdaSetup(event lamdaRequest) ([]byte, error) {
+	myArg := event.ConnectString
+	_, output := testHost(&myArg)
+	return output, nil
+}
+
+func main() {
+	if len(os.Getenv("_LAMBDA_SERVER_PORT")) > 0 {
+		// We're running in a lambda, let's handle accordingly
+		lambda.Start(lambdaSetup)
+	}
+
+	// Implied that this is *not* a lambda and so we can parse commandline args
+	var host = flag.String("host", "127.0.0.1:443", "host to test, format: hostname:port")
+	flag.Parse() // Parse commandline options
+
+	// Run test on host
+	textOutput, _ := testHost(host)
+	fmt.Printf("%s\n", textOutput)
+
 }
