@@ -33,6 +33,25 @@ $ ./tlsscan --host api.ecobee.com:443 | jq '.'
 }
 ```
 
+### Lambda
+
+This code can (sort of) be run in a lambda, following the instructions here:
+
+https://docs.aws.amazon.com/lambda/latest/dg/lambda-go-how-to-create-deployment-package.html
+
+Input is as follows:
+
+```
+{
+  connnectString: "api.ecobee.com:443"
+}
+
+```
+
+TLSScan *should* detect if it's being run on the commandline or in lambda automatically
+
+
+
 ## Bugs 🐜
 
 ~~Go currently filters out ciphersuites which it does not support, and so it does not check the full list.~~ 
