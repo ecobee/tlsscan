@@ -12,6 +12,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 )
 
@@ -228,10 +229,14 @@ func testHost(host *string) (string, []byte) {
 
 // lambdaSetup is used to perform the lambda only steps so that the same tool can be ran
 // either on the commandline or in a lambda function in AWS
-func lambdaSetup(event lamdaRequest) ([]byte, error) {
-	myArg := event.ConnectString
-	_, output := testHost(&myArg)
-	return output, nil
+func lambdaSetup(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+	var myArg lamdaRequest
+	json.Unmarshal([]byte(request.Body), &myArg)
+	_, output := testHost(&myArg.ConnectString)
+	return events.APIGatewayProxyResponse{
+		Body:       string(output),
+		StatusCode: 200,
+	}, nil
 }
 
 func main() {
